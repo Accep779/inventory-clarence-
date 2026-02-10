@@ -1,0 +1,105 @@
+# Inventory Clearance Agent - PRODUCTION Configuration
+# Use: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  # ============================================================================
+  # BACKEND API (FastAPI) - PRODUCTION
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - HOST=${HOST}
+      - DEBUG=false
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    # NO --reload, NO volume mounts in production
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================================
+  # CELERY WORKER (Background Jobs) - PRODUCTION
+  # ============================================================================
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - backend
+      - redis
+    restart: unless-stopped
+    command: celery -A app.worker worker --loglevel=warning --concurrency=4
+
+  # ============================================================================
+  # CELERY BEAT (Scheduled Tasks) - PRODUCTION
+  # ============================================================================
+  scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - backend
+      - redis
+    restart: unless-stopped
+    command: celery -A app.worker beat --loglevel=warning
+
+  # ============================================================================
+  # REDIS (Caching & Queue) - Use managed Redis in production if possible
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # ============================================================================
+  # FRONTEND (Next.js) - PRODUCTION
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${HOST}
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${HOST}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    command: npm run start
+
+volumes:
+  redis_data:
+
+    # NOTE: For production, consider using:
+    # - Managed PostgreSQL (Supabase, RDS) instead of Docker
+    # - Managed Redis (Upstash) instead of Docker
+    # - A reverse proxy (nginx, Traefik) for HTTPS

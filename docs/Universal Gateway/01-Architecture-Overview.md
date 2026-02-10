@@ -1,0 +1,51 @@
+# Universal Gateway: Architecture Overview
+
+The **Universal Gateway** is a unified abstraction layer for Cephly's external communications. It decouples the "Agent Brain" from the specific implementation details of messaging channels (Email, SMS, WhatsApp, etc.).
+
+## Core Principles
+
+1.  **Channel Agnosticism:** Agents do not know if they are talking to a user via SMS or email. They simply send a message to a `SessionKey`.
+2.  **Normalized Identity:** Every user interaction is mapped to a `SessionKey` (e.g., `whatsapp:123456789`) and optionally resolved to a `UniversalProfile` (e.g., `User(id=55)`).
+3.  **Unified Inbound/Outbound:** All incoming webhooks flow through a single `Inbound Router`. All outgoing messages flow through a single `Outbound Router`.
+
+## System Components
+
+```mermaid
+graph TD
+    A[External Platforms] -->|Webhooks| B[Gateway API]
+    B -->|Normalize| C[Event Bus (Redis)]
+    C -->|Consume| D[Agent Workflow (Temporal)]
+    D -->|generate_reply()| E[Gateway Service]
+    E -->|Route| F[Plugin Registry]
+    F -->|Select| G[Channel Plugin (e.g., Twilio)]
+    G -->|Send API| A
+```
+
+### 1. The Gateway API (`backend/app/routers/gateway.py`)
+- Exposes standard endpoints for platform webhooks.
+- Validates signatures (HMAC, etc.).
+- Converts platform-specific payloads into `InboundMessage` objects.
+
+### 2. The Plugin Registry (`backend/app/gateway/registry.py`)
+- Dynamically loads channel integrations.
+- Enforces the `ChannelPlugin` protocol.
+- Holds configuration (API Keys) securely.
+
+### 3. The Channel Plugins (`backend/app/channels/*`)
+- Adapters that translate the `ChannelPlugin` protocol into provider-specific API calls.
+- Examples: `EmailPlugin` (SMTP), `TwilioPlugin` (SMS), `WhatsAppPlugin` (Meta Graph API).
+
+## Data Flow (Inbound)
+
+1.  **User** sends "Hello" on WhatsApp.
+2.  **Meta** sends POST to `https://api.cephly.com/gateway/webhook/whatsapp`.
+3.  **Gateway API** verifies signature & converts to `InboundMessage(content="Hello", session_key="whatsapp:+15550001")`.
+4.  **Gateway** emits `gateway.message_received` event.
+5.  **Agent Workflow** wakes up, processes message.
+
+## Data Flow (Outbound)
+
+1.  **Agent** decides to reply: `gateway.send(session_key="whatsapp:+15550001", content="Hi there!")`.
+2.  **Gateway Service** looks up plugin for `whatsapp`.
+3.  **Gateway Service** calls `plugin.send_message(...)`.
+4.  **Plugin** calls Twilio/Meta API.

@@ -1,0 +1,52 @@
+# Skills System: Agent Integration Guide
+
+How to modify `StrategyAgent` (or any agent) to use Dynamic Skills.
+
+## 1. Update Agent Initialization
+
+The agent needs access to the `SkillLoader`.
+
+```python
+class StrategyAgent:
+    def __init__(self, merchant_id):
+        self.loader = SkillLoader("app/skills")
+        self.active_skills = []
+```
+
+## 2. Dynamic prompt Injection
+
+Modify the `run()` or `execute()` method to inject skill instructions.
+
+```python
+    async def run(self, input_text):
+        # 1. Decide which skills to use (Hardcoded for now, or via Router)
+        skill_names = ["inventory", "shipping"] 
+        
+        # 2. Load Skills
+        skills = [self.loader.load_skill(name) for name in skill_names]
+        
+        # 3. Construct System Prompt
+        base_prompt = "You are a Strategy Agent."
+        skill_prompts = "\n\n".join([s.system_prompt for s in skills])
+        full_system_prompt = f"{base_prompt}\n\nENABLED SKILLS:\n{skill_prompts}"
+        
+        # 4. Collect Tools
+        all_tools = []
+        for s in skills:
+            all_tools.extend(s.tools)
+            
+        # 5. Call LLM
+        return await llm.chat(full_system_prompt, tools=all_tools)
+```
+
+## 3. Router-Based Selection (Advanced)
+
+Eventually, you want the `LLMRouter` to pick skills automatically.
+
+```python
+# LLM Router Output
+{
+    "intent": "check_stock",
+    "required_skills": ["inventory"]
+}
+```

@@ -1,0 +1,52 @@
+{
+  "name": "cephly-frontend-new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "generate-index": "python scripts/generate_index.py",
+    "generate-api": "npx openapi-typescript ../backend/scripts/export_openapi.py --output lib/api/schema.ts",
+    "generate-api:schema": "cd ../backend && python scripts/export_openapi.py --output ../frontend/lib/api/schema.json && cd ../frontend && npx openapi-typescript lib/api/schema.json --output lib/api/schema.ts"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@tanstack/react-query": "^5.90.19",
+    "axios": "^1.13.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.26.2",
+    "lucide-react": "^0.562.0",
+    "next": "14.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^3.7.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "openapi-fetch": "^0.9.0",
+    "openapi-typescript": "^7.0.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5"
+  }
+}

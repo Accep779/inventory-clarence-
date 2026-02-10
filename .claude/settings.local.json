@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l ./backend/app/**/*.py)",
+      "Bash(python -c \"from app.models import Merchant, Product, Campaign; print\\(''✓ All imports working''\\)\")",
+      "Bash(python -c \"from app.models import Merchant, Product, Campaign, InboxItem; print\\(''✓ All imports working''\\)\")",
+      "Bash(python -c \"from app.models import Merchant, Product, Campaign, InboxItem, Customer, Order; print\\(''All imports working''\\)\")",
+      "Bash(python -c \"from app.models import TokenVault, AgentThought, AuditLog, StoreDNA, RiskPolicy, GlobalStrategyPattern; print\\(''All auth/agent/audit models working''\\)\")",
+      "Bash(python -c \"from app.database import Base, engine; from app.models.base import UUIDMixin; print\\(''Database and base imports working''\\)\")",
+      "Bash(find backend/app -name \"*.py\" -exec grep -l \"Fernet\\\\|encrypt\\\\|decrypt\" {} ;)",
+      "Bash(python -c \"from app.models import Merchant, IntegrationCredential, TokenVault; print\\(''All imports working''\\)\")",
+      "Bash(grep -r \"__table_args__\" app/models/*.py)",
+      "Bash(python -c \"\nfrom app.models import \\(\n    Merchant, Product, Customer, Order, Campaign, InboxItem,\n    IntegrationCredential, TokenVault, AuditLog, ActionReversal,\n    AgentThought, StoreDNA, RiskPolicy\n\\)\nfrom app.services.audit_logger import AuditLogger, AuditAction\nfrom app.orchestration import registry, background_task\nprint\\(''All imports successful''\\)\nprint\\(f''Registered workflows: {len\\(registry.workflows\\)}''\\)\nprint\\(f''Registered activities: {len\\(registry.activities\\)}''\\)\n\")",
+      "Bash(python scripts/export_openapi.py --silent)",
+      "Bash(python scripts/export_openapi.py)",
+      "Bash(python -c \"\nimport sys\nsys.path.insert\\(0, ''.''\\)\nfrom app.main import app\nschema = app.openapi\\(\\)\nprint\\(f''Success! Endpoints: {len\\(schema.get\\(\"\"paths\"\", {}\\)\\)}''\\)\nprint\\(f''Schemas: {len\\(schema.get\\(\"\"components\"\", {}\\).get\\(\"\"schemas\"\", {}\\)\\)}''\\)\n\")",
+      "Bash(python scripts/export_openapi.py --output ../frontend/lib/api/schema.json)",
+      "Bash(docker-compose up -d)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(npm install)",
+      "Bash(node --version)",
+      "Bash(python -c \"from app.main import app; print\\(''Backend imports OK''\\)\")",
+      "Bash(npm run dev)",
+      "Bash(ls frontend/components/ui/*.tsx)",
+      "Bash(npm install class-variance-authority)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(git init)",
+      "Bash(git add README.md)",
+      "Bash(git commit -m \"first commit\")",
+      "Bash(git branch -M main)",
+      "Bash(git remote add origin https://github.com/Accep779/inventory-clarence-.git)",
+      "Bash(git push -u origin main)"
+    ]
+  }
+}

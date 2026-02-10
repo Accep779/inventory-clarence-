@@ -1,0 +1,53 @@
+# Skills System: Architecture Overview
+
+The **Skills System** allows Cephly to dynamically extend its capabilities without modifying core agent code. It is based on the **"Dynamic Prompt Injection"** pattern used by OpenClaw.
+
+## Core Concept
+Agents are typically "hardcoded" with a fixed set of tools. The Skills System changes this by treating tools as **Content** rather than Code.
+
+1.  **Skills are Folders:** A skill is just a directory with a Markdown file (`SKILL.md`) and a Python file (`tools.py`).
+2.  **Just-In-Time Learning:** Agents read the `SKILL.md` at runtime and "learn" how to use the tool instantly.
+3.  **Decoupled Logic:** You can add 50 new skills (Inventory, Shipping, Weather) without touching the [StrategyAgent](file:///C:/Users/Sagtiyini%20Gray/Desktop/Assit/cephly_multiagnets/backend/app/agents/strategy.py#97-1170) class.
+
+## System Components
+
+```mermaid
+graph TD
+    A[Skill Library (Folder)] -->|Reads| B[SkillLoader Service]
+    B -->|Parses| C[Skill Object]
+    C -->|Injects| D[Agent System Prompt]
+    C -->|Binds| E[LLM Tool Definitions]
+    
+    subgraph Agent Runtime
+    D --> F[LLM Context]
+    E --> F
+    F -->|Decides to use| G[Execute Tool]
+    end
+```
+
+### 1. The Skill Library (`backend/app/skills/`)
+A directory where each subfolder represents a capability.
+*   `inventory/`
+*   `slack_messenger/`
+*   `market_research/`
+
+### 2. The Skill Loader (`backend/app/services/skill_loader.py`)
+A service that:
+*   Scans the directory on startup (or on demand).
+*   Parses `SKILL.md` frontmatter (name, description, requirements).
+*   Dynamically imports `tools.py` to find functions decorated with `@skill_tool`.
+
+### 3. The Runtime Injector
+Logic within the Base Agent that:
+*   Takes a list of requested skills (e.g., `["inventory"]`).
+*   Appends the content of `SKILL.md` to the System Prompt.
+*   Merges the Python functions into the `tools` list passed to the LLM.
+
+## Workflow
+
+1.  **Developer** creates `backend/app/skills/new_skill/`.
+2.  **Agent** starts up.
+3.  **Agent** is asked to solve a problem.
+4.  **Agent** (or Router) selects relevant skills.
+5.  **Loader** injects the skill instructions.
+6.  **LLM** sees the new instructions and uses the new tool.

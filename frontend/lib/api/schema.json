@@ -1,0 +1,4956 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Inventory Clearance Agent",
+    "description": "Autonomous AI Agent for Shopify Inventory Clearance & Customer Reactivation",
+    "version": "1.0.0",
+    "x-logo": {
+      "url": "https://cephly.com/logo.png",
+      "altText": "Cephly Logo"
+    }
+  },
+  "paths": {
+    "/api/auth/install": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Install",
+        "description": "Step 1: Initiate OAuth flow for the specified platform.",
+        "operationId": "install_api_auth_install_get",
+        "parameters": [
+          {
+            "name": "shop",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Shop domain or URL",
+              "title": "Shop"
+            },
+            "description": "Shop domain or URL"
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Platform name (shopify, woocommerce, bigcommerce)",
+              "default": "shopify",
+              "title": "Platform"
+            },
+            "description": "Platform name (shopify, woocommerce, bigcommerce)"
+          },
+          {
+            "name": "consumer_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Consumer Key"
+            }
+          },
+          {
+            "name": "consumer_secret",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Consumer Secret"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/callback": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Callback",
+        "description": "Step 2: Handle OAuth callback for the specified platform.",
+        "operationId": "callback_api_auth_callback_get",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "shopify",
+              "title": "Platform"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get Current Merchant",
+        "description": "Get current merchant info.",
+        "operationId": "get_current_merchant_api_auth_me_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webhooks/{platform}/{topic}": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Handle Webhook",
+        "description": "Universal generic webhook entry point.",
+        "operationId": "handle_webhook_api_webhooks__platform___topic__post",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Platform"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/stream": {
+      "get": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Stream Inbox Updates",
+        "description": "Server-Sent Events endpoint for real-time inbox updates.\nFrontend connects to this to get instant \"pings\" when agents act.",
+        "operationId": "stream_inbox_updates_api_inbox_stream_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox": {
+      "get": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "List Inbox Items",
+        "description": "List all inbox items for a merchant.",
+        "operationId": "list_inbox_items_api_inbox_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/{item_id}": {
+      "get": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Get Inbox Item",
+        "description": "Get a specific inbox item.",
+        "operationId": "get_inbox_item_api_inbox__item_id__get",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxItemResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/{item_id}/approve": {
+      "post": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Approve Inbox Item",
+        "description": "Approve an agent's proposal.\n\nSupports optional Idempotency-Key header to prevent duplicate approvals.\nIf provided, duplicate requests with the same key will return cached result.",
+        "operationId": "approve_inbox_item_api_inbox__item_id__approve_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/{item_id}/reject": {
+      "post": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Reject Inbox Item",
+        "description": "Reject an agent's proposal.",
+        "operationId": "reject_inbox_item_api_inbox__item_id__reject_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Reason"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/{item_id}/items": {
+      "patch": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Remove Item From Proposal",
+        "description": "Remove a specific SKU from a batch proposal before approval.",
+        "operationId": "remove_item_from_proposal_api_inbox__item_id__items_patch",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "sku",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Sku"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/{item_id}/chat": {
+      "post": {
+        "tags": [
+          "Inbox"
+        ],
+        "summary": "Chat With Agent",
+        "description": "Send a message to the agent about this proposal.\nThe agent may reply and/or update the proposal data.",
+        "operationId": "chat_with_agent_api_inbox__item_id__chat_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxItemResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "List Products",
+        "description": "List products with high-performance optimized queries.",
+        "operationId": "list_products_api_products_get",
+        "parameters": [
+          {
+            "name": "is_dead_stock",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Dead Stock"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/dead-stock-summary": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get Dead Stock Summary",
+        "description": "Get summary of dead stock by severity.\nOptimized with eager loading.",
+        "operationId": "get_dead_stock_summary_api_products_dead_stock_summary_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/merchants/me": {
+      "get": {
+        "tags": [
+          "Merchants"
+        ],
+        "summary": "Get Merchant",
+        "description": "Get current merchant details.",
+        "operationId": "get_merchant_api_merchants_me_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/merchants/me/settings": {
+      "patch": {
+        "tags": [
+          "Merchants"
+        ],
+        "summary": "Update Merchant Settings",
+        "description": "Update merchant agent settings.\n\nThese settings control agent autonomy levels:\n- max_auto_discount: Maximum discount agent can apply without approval\n- max_auto_ad_spend: Maximum ad spend agent can approve automatically",
+        "operationId": "update_merchant_settings_api_merchants_me_settings_patch",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantSettingsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/merchants/me/stats": {
+      "get": {
+        "tags": [
+          "Merchants"
+        ],
+        "summary": "Get Merchant Stats",
+        "description": "Get high-level stats for merchant dashboard.",
+        "operationId": "get_merchant_stats_api_merchants_me_stats_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/merchants/me/dashboard/summary": {
+      "get": {
+        "tags": [
+          "Merchants"
+        ],
+        "summary": "Get Dashboard Summary",
+        "description": "Consolidated dashboard summary for the Overview page.",
+        "operationId": "get_dashboard_summary_api_merchants_me_dashboard_summary_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/strategy/plan": {
+      "post": {
+        "tags": [
+          "Strategy"
+        ],
+        "summary": "Plan Clearance",
+        "description": "Trigger Strategy Agent to create clearance plan for a product.\n\nThis creates an inbox proposal for the merchant.",
+        "operationId": "plan_clearance_api_strategy_plan_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyPlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/strategy/plan-all": {
+      "post": {
+        "tags": [
+          "Strategy"
+        ],
+        "summary": "Plan Clearance For All",
+        "description": "Trigger Strategy Agent to create plans for all dead stock products.\n\nFilters by severity (default: critical and high).",
+        "operationId": "plan_clearance_for_all_api_strategy_plan_all_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkStrategyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/strategy/strategies": {
+      "get": {
+        "tags": [
+          "Strategy"
+        ],
+        "summary": "List Strategies",
+        "description": "List all available clearance strategies.\nRequires authentication.",
+        "operationId": "list_strategies_api_strategy_strategies_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/strategy/proposals": {
+      "get": {
+        "tags": [
+          "Strategy"
+        ],
+        "summary": "List Strategy Proposals",
+        "description": "List all strategy proposals for a merchant.",
+        "operationId": "list_strategy_proposals_api_strategy_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/thoughts": {
+      "get": {
+        "tags": [
+          "Thoughts",
+          "Thoughts"
+        ],
+        "summary": "Get Thoughts",
+        "description": "Retrieve agent thoughts for the current merchant.\nOptionally filter by execution_id for a specific process.",
+        "operationId": "get_thoughts_api_thoughts_get",
+        "parameters": [
+          {
+            "name": "execution_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Execution Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Thoughts Api Thoughts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns": {
+      "get": {
+        "tags": [
+          "Campaigns",
+          "Campaigns"
+        ],
+        "summary": "List Campaigns",
+        "description": "List campaigns for a merchant.",
+        "operationId": "list_campaigns_api_campaigns_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}": {
+      "get": {
+        "tags": [
+          "Campaigns",
+          "Campaigns"
+        ],
+        "summary": "Get Campaign",
+        "description": "Get specific campaign.",
+        "operationId": "get_campaign_api_campaigns__campaign_id__get",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}/pause": {
+      "post": {
+        "tags": [
+          "Campaigns",
+          "Campaigns"
+        ],
+        "summary": "Pause Campaign",
+        "description": "Pause an active campaign.",
+        "operationId": "pause_campaign_api_campaigns__campaign_id__pause_post",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}/resume": {
+      "post": {
+        "tags": [
+          "Campaigns",
+          "Campaigns"
+        ],
+        "summary": "Resume Campaign",
+        "description": "Resume a paused campaign.",
+        "operationId": "resume_campaign_api_campaigns__campaign_id__resume_post",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Campaign Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/brand-guide": {
+      "post": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Upload Brand Guide",
+        "description": "Upload markdown brand guide.\nCan accept either a .md file upload or JSON body with markdown_content.",
+        "operationId": "upload_brand_guide_api_dna_brand_guide_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_brand_guide_api_dna_brand_guide_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/floor-pricing": {
+      "post": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Upload Floor Pricing",
+        "description": "Upload floor pricing CSV.\n\nExpected columns:\n- sku OR shopify_product_id (at least one required)\n- cost_price (required)\n- min_margin_pct (optional)\n- floor_price (optional)\n- liquidation_mode (optional, true/false)\n- notes (optional)",
+        "operationId": "upload_floor_pricing_api_dna_floor_pricing_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_floor_pricing_api_dna_floor_pricing_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Get Floor Pricing",
+        "description": "Get all floor pricing records for a merchant.",
+        "operationId": "get_floor_pricing_api_dna_floor_pricing_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/scrape": {
+      "post": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Trigger Store Scrape",
+        "description": "Trigger URL scraping for DNA enrichment.\nScrapes homepage and about page, extracts brand signals.",
+        "operationId": "trigger_store_scrape_api_dna_scrape_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScrapeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/identity": {
+      "post": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Save Identity Description",
+        "description": "Save the merchant's identity description.",
+        "operationId": "save_identity_description_api_dna_identity_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/context": {
+      "get": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Get Agent Context",
+        "description": "Get complete agent context string.\nReturns the full DNA context formatted for injection into agent prompts.",
+        "operationId": "get_agent_context_api_dna_context_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/summary": {
+      "get": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Get Dna Summary",
+        "description": "Get a summary of the merchant's Store DNA.",
+        "operationId": "get_dna_summary_api_dna_summary_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dna/floor-pricing/template": {
+      "get": {
+        "tags": [
+          "Store DNA",
+          "Store DNA"
+        ],
+        "summary": "Get Floor Pricing Template",
+        "description": "Returns a sample CSV template for floor pricing upload.",
+        "operationId": "get_floor_pricing_template_api_dna_floor_pricing_template_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scan/start": {
+      "post": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Start Scan",
+        "description": "Start a quick scan for onboarding.\n\nRequires authentication. Triggers Celery task and returns session_id for SSE subscription.",
+        "operationId": "start_scan_api_scan_start_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanStartResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scan/stream/{session_id}": {
+      "get": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Stream Scan Events",
+        "description": "Server-Sent Events endpoint for live scan updates.\n\nEvents:\n- scan_progress: {products_scanned, total_products}\n- dead_stock_found: {product, running_total}\n- quick_scan_complete: {summary}\n- error: {error}",
+        "operationId": "stream_scan_events_api_scan_stream__session_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scan/status/{session_id}": {
+      "get": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Get Scan Status",
+        "description": "Polling fallback for scan status.\n\nReturns latest status from Redis if SSE not available.",
+        "operationId": "get_scan_status_api_scan_status__session_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scan/quick-start": {
+      "post": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Quick Start Scan",
+        "description": "Quick start scan for merchant.\n\nUsed immediately after OAuth callback.",
+        "operationId": "quick_start_scan_api_scan_quick_start_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/safety/safety/circuit-breakers/status": {
+      "get": {
+        "tags": [
+          "Safety",
+          "Safety"
+        ],
+        "summary": "Status",
+        "description": "Get status of all circuit breakers.",
+        "operationId": "status_api_safety_safety_circuit_breakers_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/safety/safety/circuit-breakers/{service}/reset": {
+      "post": {
+        "tags": [
+          "Safety",
+          "Safety"
+        ],
+        "summary": "Reset",
+        "description": "Manually reset a circuit breaker.",
+        "operationId": "reset_api_safety_safety_circuit_breakers__service__reset_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "service",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Service"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gateway/webhook/{channel_id}": {
+      "post": {
+        "tags": [
+          "Universal Gateway"
+        ],
+        "summary": "Receive Webhook",
+        "description": "Universal Webhook Receiver.\nAccepts payloads from Twilio, SendGrid, Meta, etc.",
+        "operationId": "receive_webhook_gateway_webhook__channel_id__post",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Channel Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gateway/channels": {
+      "get": {
+        "tags": [
+          "Universal Gateway"
+        ],
+        "summary": "List Channels",
+        "description": "List configured channels.\nUsed by the 'Connectivity Hub' UI.",
+        "operationId": "list_channels_gateway_channels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+                      "$ref": "#/components/schemas/ChannelConfig"
+                    },
+                    "type": "array"
+                  },
+                  "type": "object",
+                  "title": "Response List Channels Gateway Channels Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gateway/channels/{channel_id}": {
+      "patch": {
+        "tags": [
+          "Universal Gateway"
+        ],
+        "summary": "Update Channel Config",
+        "description": "Update API Keys or Settings for a channel.",
+        "operationId": "update_channel_config_gateway_channels__channel_id__patch",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Channel Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Config"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/skills/": {
+      "get": {
+        "tags": [
+          "Skills System"
+        ],
+        "summary": "List Skills",
+        "description": "List all available skills (Observer capabilities).\nThis allows the Frontend 'Skill Store' to display what the agent can do.",
+        "operationId": "list_skills_skills__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Skills Skills  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/skills/{skill_name}/toggle": {
+      "post": {
+        "tags": [
+          "Skills System"
+        ],
+        "summary": "Toggle Skill",
+        "description": "Enable/Disable a specific skill.\n(Stub for future DB persistence of enabled/disabled state)",
+        "operationId": "toggle_skill_skills__skill_name__toggle_post",
+        "parameters": [
+          {
+            "name": "skill_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Skill Name"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "title": "Active"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/digest/queue": {
+      "get": {
+        "tags": [
+          "Anti-Fatigue Layer"
+        ],
+        "summary": "View Queue",
+        "description": "Preview the 'Pending Notifications' queue.\nUsed by the Dashboard to show what messages are being intercepted.",
+        "operationId": "view_queue_digest_queue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response View Queue Digest Queue Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/digest/flush": {
+      "post": {
+        "tags": [
+          "Anti-Fatigue Layer"
+        ],
+        "summary": "Flush Digest",
+        "description": "Force-send the digest immediately.",
+        "operationId": "flush_digest_digest_flush_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webhooks/analytics/klaviyo/events": {
+      "post": {
+        "tags": [
+          "Analytics Webhooks"
+        ],
+        "summary": "Handle Klaviyo Webhook",
+        "description": "Handle Klaviyo event webhooks (Open, Click, etc).",
+        "operationId": "handle_klaviyo_webhook_api_webhooks_analytics_klaviyo_events_post",
+        "parameters": [
+          {
+            "name": "X-Klaviyo-Hmac-256",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "X-Klaviyo-Hmac-256"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webhooks/analytics/twilio/status": {
+      "post": {
+        "tags": [
+          "Analytics Webhooks"
+        ],
+        "summary": "Handle Twilio Status",
+        "description": "Handle Twilio message status callbacks.",
+        "operationId": "handle_twilio_status_api_webhooks_analytics_twilio_status_post",
+        "parameters": [
+          {
+            "name": "X-Twilio-Signature",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "X-Twilio-Signature"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/seasonal/risks": {
+      "get": {
+        "tags": [
+          "Seasonal",
+          "Seasonal"
+        ],
+        "summary": "Get Seasonal Risks",
+        "description": "List all products with seasonal risk assessments.\n\nReturns products identified as seasonal with their risk levels,\nsorted by urgency (critical first).",
+        "operationId": "get_seasonal_risks_api_seasonal_risks_get",
+        "parameters": [
+          {
+            "name": "season",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by season",
+              "title": "Season"
+            },
+            "description": "Filter by season"
+          },
+          {
+            "name": "risk_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by risk level",
+              "title": "Risk Level"
+            },
+            "description": "Filter by risk level"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonalRisksListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/seasonal/scan": {
+      "post": {
+        "tags": [
+          "Seasonal",
+          "Seasonal"
+        ],
+        "summary": "Trigger Seasonal Scan",
+        "description": "Trigger a manual seasonal risk scan.\n\nIn async mode, returns immediately with a task ID.\nIn sync mode, waits for completion (max 30s).",
+        "operationId": "trigger_seasonal_scan_api_seasonal_scan_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanTriggerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanTriggerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/seasonal/insights": {
+      "get": {
+        "tags": [
+          "Seasonal",
+          "Seasonal"
+        ],
+        "summary": "Get Seasonal Insights",
+        "description": "Get historical seasonal clearance performance insights.\n\nAnalyzes past campaigns to identify what works for each season.",
+        "operationId": "get_seasonal_insights_api_seasonal_insights_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonalInsightsListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/seasonal/thoughts": {
+      "get": {
+        "tags": [
+          "Seasonal",
+          "Seasonal"
+        ],
+        "summary": "Get Seasonal Agent Thoughts",
+        "description": "Get recent reasoning from the Seasonal Transition Agent.\n\nUseful for debugging and understanding agent decisions.",
+        "operationId": "get_seasonal_agent_thoughts_api_seasonal_thoughts_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/stats": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get Analytics Stats",
+        "description": "Aggregated performance data for the Analytics dashboard.",
+        "operationId": "get_analytics_stats_api_analytics_stats_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Analytics Stats Api Analytics Stats Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/crm/journeys": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "Get Active Journeys",
+        "description": "Fetch all active or recently completed reactivation journeys.",
+        "operationId": "get_active_journeys_api_crm_journeys_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/crm/stats": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "Get Crm Stats",
+        "description": "Aggregate CRM and Retention stats.",
+        "operationId": "get_crm_stats_api_crm_stats_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/auth": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Authenticate Agent",
+        "description": "Exchange Client Credentials for an Agent Access Token.",
+        "operationId": "authenticate_agent_internal_agents_auth_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTokenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/me": {
+      "get": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Get Agent Identity",
+        "description": "Self-inspection endpoint for agents.",
+        "operationId": "get_agent_identity_internal_agents_me_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/proposals": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Create Proposal",
+        "description": "Secure proposal creation.\nEnforces that only agents with 'proposals:write' scope can create proposals.",
+        "operationId": "create_proposal_internal_agents_proposals_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/campaigns/lock": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Lock Campaign Execution",
+        "description": "Atomic Claim: Execution Agent requests permission to run this proposal.\nRequires 'campaigns:execute' scope.",
+        "operationId": "lock_campaign_execution_internal_agents_campaigns_lock_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionLockRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/campaigns/complete": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Complete Campaign Execution",
+        "description": "Report execution result.",
+        "operationId": "complete_campaign_execution_internal_agents_campaigns_complete_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionResultRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/campaigns/create": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Create Campaign",
+        "description": "Create a new campaign record.\nRequires 'campaigns:execute' scope.",
+        "operationId": "create_campaign_internal_agents_campaigns_create_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/campaigns/log": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Log Campaign Touch",
+        "description": "Log an execution touch (email/sms sent).\nRequires 'campaigns:execute' scope.",
+        "operationId": "log_campaign_touch_internal_agents_campaigns_log_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TouchLogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/notifications/failure": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Notify Failure",
+        "description": "Notify merchant of execution failure.",
+        "operationId": "notify_failure_internal_agents_notifications_failure_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FailureNotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/thoughts": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Log Agent Thought",
+        "description": "Log an agent's internal monologue securely.",
+        "operationId": "log_agent_thought_internal_agents_thoughts_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThoughtLogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/inventory/status": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Update Inventory Status",
+        "description": "Bulk update product risk status.\nRequires 'inventory:update' scope.",
+        "operationId": "update_inventory_status_internal_agents_inventory_status_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkInventoryUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/agents/matchmaker/segments": {
+      "post": {
+        "tags": [
+          "internal-agents"
+        ],
+        "summary": "Update Segment Stats",
+        "description": "Matchmaker reporting segment analysis.\nRequires 'matchmaker:update' scope.",
+        "operationId": "update_segment_stats_internal_agents_matchmaker_segments_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentStatsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Deep Health Check: Verifies Database Connectivity.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint with system info.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentLoginRequest": {
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "type": "string",
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_id",
+          "client_secret"
+        ],
+        "title": "AgentLoginRequest"
+      },
+      "AgentTokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "title": "AgentTokenResponse"
+      },
+      "Body_upload_brand_guide_api_dna_brand_guide_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BrandGuideRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "Body_upload_brand_guide_api_dna_brand_guide_post"
+      },
+      "Body_upload_floor_pricing_api_dna_floor_pricing_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_floor_pricing_api_dna_floor_pricing_post"
+      },
+      "BrandGuideRequest": {
+        "properties": {
+          "markdown_content": {
+            "type": "string",
+            "title": "Markdown Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "markdown_content"
+        ],
+        "title": "BrandGuideRequest"
+      },
+      "BulkInventoryUpdateRequest": {
+        "properties": {
+          "updates": {
+            "items": {
+              "$ref": "#/components/schemas/ProductStatusUpdate"
+            },
+            "type": "array",
+            "title": "Updates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updates"
+        ],
+        "title": "BulkInventoryUpdateRequest"
+      },
+      "BulkStrategyRequest": {
+        "properties": {
+          "severity_filter": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity Filter",
+            "default": [
+              "critical",
+              "high"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "BulkStrategyRequest",
+        "description": "Request to plan clearance for all dead stock."
+      },
+      "CampaignCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "product_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Product Ids"
+          },
+          "target_segments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Target Segments"
+          },
+          "content_snapshot": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Content Snapshot"
+          },
+          "origin_execution_id": {
+            "type": "string",
+            "title": "Origin Execution Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "product_ids",
+          "target_segments",
+          "content_snapshot"
+        ],
+        "title": "CampaignCreateRequest"
+      },
+      "CampaignListResponse": {
+        "properties": {
+          "campaigns": {
+            "items": {
+              "$ref": "#/components/schemas/CampaignResponse"
+            },
+            "type": "array",
+            "title": "Campaigns"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "active_count": {
+            "type": "integer",
+            "title": "Active Count"
+          },
+          "total_revenue": {
+            "type": "number",
+            "title": "Total Revenue"
+          },
+          "total_spend": {
+            "type": "number",
+            "title": "Total Spend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campaigns",
+          "total",
+          "active_count",
+          "total_revenue",
+          "total_spend"
+        ],
+        "title": "CampaignListResponse",
+        "description": "Response model for campaign list."
+      },
+      "CampaignResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "emails_sent": {
+            "type": "integer",
+            "title": "Emails Sent"
+          },
+          "emails_opened": {
+            "type": "integer",
+            "title": "Emails Opened"
+          },
+          "emails_clicked": {
+            "type": "integer",
+            "title": "Emails Clicked"
+          },
+          "sms_sent": {
+            "type": "integer",
+            "title": "Sms Sent"
+          },
+          "conversions": {
+            "type": "integer",
+            "title": "Conversions"
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "emails_sent",
+          "emails_opened",
+          "emails_clicked",
+          "sms_sent",
+          "conversions",
+          "revenue",
+          "started_at",
+          "ended_at",
+          "created_at"
+        ],
+        "title": "CampaignResponse",
+        "description": "Response model for campaigns."
+      },
+      "ChannelConfig": {
+        "properties": {
+          "channel_id": {
+            "type": "string",
+            "title": "Channel Id"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel_id",
+          "provider",
+          "status",
+          "is_active"
+        ],
+        "title": "ChannelConfig"
+      },
+      "ChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ChatRequest"
+      },
+      "ExecutionLockRequest": {
+        "properties": {
+          "proposal_id": {
+            "type": "string",
+            "title": "Proposal Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "proposal_id"
+        ],
+        "title": "ExecutionLockRequest"
+      },
+      "ExecutionResultRequest": {
+        "properties": {
+          "proposal_id": {
+            "type": "string",
+            "title": "Proposal Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "proposal_id",
+          "status",
+          "details"
+        ],
+        "title": "ExecutionResultRequest"
+      },
+      "FailureNotificationRequest": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "details"
+        ],
+        "title": "FailureNotificationRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IdentityRequest": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "description"
+        ],
+        "title": "IdentityRequest"
+      },
+      "InboxItemResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "agent_type": {
+            "type": "string",
+            "title": "Agent Type"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "proposal_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Proposal Data"
+          },
+          "chat_history": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chat History",
+            "default": []
+          },
+          "viewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Viewed At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "executed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executed At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "waiting_for_mobile_auth": {
+            "type": "boolean",
+            "title": "Waiting For Mobile Auth",
+            "default": false
+          },
+          "mobile_auth_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mobile Auth Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "status",
+          "agent_type",
+          "confidence",
+          "proposal_data",
+          "viewed_at",
+          "decided_at",
+          "executed_at",
+          "created_at"
+        ],
+        "title": "InboxItemResponse",
+        "description": "Response model for inbox items."
+      },
+      "InboxListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InboxItemResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "pending_count": {
+            "type": "integer",
+            "title": "Pending Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "pending_count"
+        ],
+        "title": "InboxListResponse",
+        "description": "Response model for inbox list."
+      },
+      "MerchantResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "shopify_domain": {
+            "type": "string",
+            "title": "Shopify Domain"
+          },
+          "store_name": {
+            "type": "string",
+            "title": "Store Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "plan": {
+            "type": "string",
+            "title": "Plan"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "max_auto_discount": {
+            "type": "number",
+            "title": "Max Auto Discount"
+          },
+          "max_auto_ad_spend": {
+            "type": "number",
+            "title": "Max Auto Ad Spend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shopify_domain",
+          "store_name",
+          "email",
+          "plan",
+          "is_active",
+          "max_auto_discount",
+          "max_auto_ad_spend"
+        ],
+        "title": "MerchantResponse",
+        "description": "Response model for merchant."
+      },
+      "MerchantSettingsUpdate": {
+        "properties": {
+          "max_auto_discount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Auto Discount"
+          },
+          "max_auto_ad_spend": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Auto Ad Spend"
+          }
+        },
+        "type": "object",
+        "title": "MerchantSettingsUpdate",
+        "description": "Request model for updating merchant settings."
+      },
+      "ProductListResponse": {
+        "properties": {
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductResponse"
+            },
+            "type": "array",
+            "title": "Products"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "dead_stock_count": {
+            "type": "integer",
+            "title": "Dead Stock Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "products",
+          "total",
+          "dead_stock_count"
+        ],
+        "title": "ProductListResponse",
+        "description": "Response model for product list."
+      },
+      "ProductResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "shopify_product_id": {
+            "type": "integer",
+            "title": "Shopify Product Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "handle": {
+            "type": "string",
+            "title": "Handle"
+          },
+          "product_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Type"
+          },
+          "vendor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "total_inventory": {
+            "type": "integer",
+            "title": "Total Inventory"
+          },
+          "variant_count": {
+            "type": "integer",
+            "title": "Variant Count"
+          },
+          "velocity_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Velocity Score"
+          },
+          "is_dead_stock": {
+            "type": "boolean",
+            "title": "Is Dead Stock"
+          },
+          "dead_stock_severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dead Stock Severity"
+          },
+          "days_since_last_sale": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Since Last Sale"
+          },
+          "units_sold_30d": {
+            "type": "integer",
+            "title": "Units Sold 30D"
+          },
+          "units_sold_90d": {
+            "type": "integer",
+            "title": "Units Sold 90D"
+          },
+          "revenue_30d": {
+            "type": "number",
+            "title": "Revenue 30D"
+          },
+          "inventory_value": {
+            "type": "number",
+            "title": "Inventory Value",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shopify_product_id",
+          "title",
+          "handle",
+          "product_type",
+          "vendor",
+          "status",
+          "total_inventory",
+          "variant_count",
+          "velocity_score",
+          "is_dead_stock",
+          "dead_stock_severity",
+          "days_since_last_sale",
+          "units_sold_30d",
+          "units_sold_90d",
+          "revenue_30d"
+        ],
+        "title": "ProductResponse",
+        "description": "Response model for products."
+      },
+      "ProductStatusUpdate": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "is_dead_stock": {
+            "type": "boolean",
+            "title": "Is Dead Stock"
+          },
+          "dead_stock_severity": {
+            "type": "string",
+            "title": "Dead Stock Severity"
+          },
+          "velocity_score": {
+            "type": "number",
+            "title": "Velocity Score"
+          },
+          "days_since_last_sale": {
+            "type": "integer",
+            "title": "Days Since Last Sale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "is_dead_stock",
+          "dead_stock_severity",
+          "velocity_score",
+          "days_since_last_sale"
+        ],
+        "title": "ProductStatusUpdate"
+      },
+      "ProposalCreateRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "pricing": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pricing"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "discount_percent": {
+            "type": "number",
+            "title": "Discount Percent",
+            "default": 0.0
+          },
+          "projected_revenue": {
+            "type": "number",
+            "title": "Projected Revenue",
+            "default": 0.0
+          },
+          "copy_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Copy Data",
+            "default": {}
+          },
+          "reasoning": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Reasoning",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "pricing",
+          "strategy"
+        ],
+        "title": "ProposalCreateRequest"
+      },
+      "ScanStartResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "message"
+        ],
+        "title": "ScanStartResponse"
+      },
+      "ScanTriggerRequest": {
+        "properties": {
+          "async_mode": {
+            "type": "boolean",
+            "title": "Async Mode",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "ScanTriggerRequest"
+      },
+      "ScanTriggerResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "task_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "ScanTriggerResponse"
+      },
+      "ScrapeRequest": {
+        "properties": {
+          "store_url": {
+            "type": "string",
+            "title": "Store Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "store_url"
+        ],
+        "title": "ScrapeRequest"
+      },
+      "SeasonalInsightResponse": {
+        "properties": {
+          "season": {
+            "type": "string",
+            "title": "Season"
+          },
+          "total_campaigns": {
+            "type": "integer",
+            "title": "Total Campaigns"
+          },
+          "success_rate": {
+            "type": "number",
+            "title": "Success Rate"
+          },
+          "avg_revenue": {
+            "type": "number",
+            "title": "Avg Revenue"
+          },
+          "top_strategy": {
+            "type": "string",
+            "title": "Top Strategy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "season",
+          "total_campaigns",
+          "success_rate",
+          "avg_revenue",
+          "top_strategy"
+        ],
+        "title": "SeasonalInsightResponse"
+      },
+      "SeasonalInsightsListResponse": {
+        "properties": {
+          "insights": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalInsightResponse"
+            },
+            "type": "array",
+            "title": "Insights"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "insights",
+          "recommendations"
+        ],
+        "title": "SeasonalInsightsListResponse"
+      },
+      "SeasonalRiskResponse": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "season": {
+            "type": "string",
+            "title": "Season"
+          },
+          "days_remaining": {
+            "type": "integer",
+            "title": "Days Remaining"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "velocity_decline": {
+            "type": "number",
+            "title": "Velocity Decline"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "reasoning": {
+            "type": "string",
+            "title": "Reasoning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "title",
+          "season",
+          "days_remaining",
+          "risk_level",
+          "velocity_decline",
+          "confidence",
+          "reasoning"
+        ],
+        "title": "SeasonalRiskResponse"
+      },
+      "SeasonalRisksListResponse": {
+        "properties": {
+          "risks": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalRiskResponse"
+            },
+            "type": "array",
+            "title": "Risks"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "by_risk_level": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "By Risk Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risks",
+          "total",
+          "by_risk_level"
+        ],
+        "title": "SeasonalRisksListResponse"
+      },
+      "SegmentStatsUpdate": {
+        "properties": {
+          "segment_counts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Segment Counts"
+          },
+          "reasoning": {
+            "type": "string",
+            "title": "Reasoning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "segment_counts",
+          "reasoning"
+        ],
+        "title": "SegmentStatsUpdate"
+      },
+      "StrategyPlanRequest": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "title": "StrategyPlanRequest",
+        "description": "Request to plan clearance for a product."
+      },
+      "ThoughtLogRequest": {
+        "properties": {
+          "agent_type": {
+            "type": "string",
+            "title": "Agent Type"
+          },
+          "thought_type": {
+            "type": "string",
+            "title": "Thought Type"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "detailed_reasoning": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detailed Reasoning",
+            "default": {}
+          },
+          "confidence_score": {
+            "type": "number",
+            "title": "Confidence Score",
+            "default": 1.0
+          },
+          "step_number": {
+            "type": "integer",
+            "title": "Step Number",
+            "default": 1
+          },
+          "execution_id": {
+            "type": "string",
+            "title": "Execution Id"
+          },
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent_type",
+          "thought_type",
+          "summary"
+        ],
+        "title": "ThoughtLogRequest"
+      },
+      "TouchLogRequest": {
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "title": "Campaign Id"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "external_id": {
+            "type": "string",
+            "title": "External Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "customer_id": {
+            "type": "string",
+            "title": "Customer Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campaign_id",
+          "channel",
+          "external_id",
+          "status"
+        ],
+        "title": "TouchLogRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
