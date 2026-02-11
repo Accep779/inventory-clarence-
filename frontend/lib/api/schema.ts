@@ -13,10 +13,8 @@
  *   type Product = components['schemas']['Product'];
  */
 
-// This is a placeholder - run `npm run generate-api` to generate actual types
-// The generated file will provide full type safety for all API operations
-
+// Re-export from schema.types
 export type { paths, components } from './schema.types';
 
-// Common type exports for convenience
-export type Schema = components['schemas'];
+// Common type exports for convenience  
+export type Schema = import('./schema.types').components['schemas'];

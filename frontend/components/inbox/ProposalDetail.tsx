@@ -18,7 +18,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { AgentChatPanel } from './AgentChatPanel';
-import { ForensicReasoningPanel } from './ForensicReasoningPanel';
+import ForensicReasoningPanel from './ForensicReasoningPanel';
 
 interface ProposalDetailProps {
   proposal: Proposal | null;

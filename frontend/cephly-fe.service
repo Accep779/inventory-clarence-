@@ -1,0 +1,15 @@
+[Unit]
+Description=Cephly Frontend
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/nodevs/inventory-clarence/frontend
+ExecStart=/usr/bin/npm start
+Environment=PORT=3002
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

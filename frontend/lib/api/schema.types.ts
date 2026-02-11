@@ -29,5 +29,4 @@ export interface components {
   };
 }
 
-// Re-export for openapi-fetch compatibility
-export type { paths, components };
+// Types already exported above

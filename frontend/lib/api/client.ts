@@ -25,40 +25,21 @@ import createClient from 'openapi-fetch';
 import type { paths, components } from './schema';
 
 // Create the typed API client
-const apiClient = createClient<paths>({
+export const apiClient = createClient<paths>({
   baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add JWT auth interceptor
-apiClient.use({
-  onRequest({ request }) {
-    // Get token from localStorage (client-side only)
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('cephly_token');
-      if (token) {
-        request.headers.set('Authorization', `Bearer ${token}`);
-      }
-    }
-    return request;
-  },
-  onResponse({ response }) {
-    // Handle 401 unauthorized
-    if (response.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('cephly_token');
-        localStorage.removeItem('cephly_merchant_id');
-
-        // Redirect to auth
-        const shopDomain = localStorage.getItem('cephly_shop_domain') || 'demo.myshopify.com';
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/install?shop=${shopDomain}`;
-      }
-    }
-    return response;
-  },
-});
+// Simple auth helper - call this before requests that need auth
+export function getAuthHeaders() {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('cephly_token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+  return {};
+}
 
 // Export types for use in components
 export type { paths, components };
@@ -71,8 +52,7 @@ export type Campaign = components['schemas']['Campaign'];
 export type InboxItem = components['schemas']['InboxItem'];
 export type AgentThought = components['schemas']['AgentThought'];
 
-// Export the client
-export { apiClient };
+// Client already exported above
 
 // Convenience wrapper for common operations
 export const api = {
